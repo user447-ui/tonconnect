@@ -45,4 +45,32 @@
         }
     });
     </script>
+    <button id="get-balance">Получить баланс</button>
+<div id="balance"></div>
+    <script>
+    document.getElementById('get-balance').addEventListener('click', async () => {
+        // Проверка подключения кошелька
+        const isConnected = await tonConnectUI.connected;
+        if (!isConnected) {
+            alert('Пожалуйста, подключите кошелек.');
+            return;
+        }
+
+        // Получение адреса кошелька
+        const address = tonConnectUI.account.address;
+        if (!address) {
+            alert('Не удалось получить адрес кошелька.');
+            return;
+        }
+
+        // Запрос баланса через TON Center API
+        const url = `https://toncenter.com/api/v2/getAddressInformation?address=${address}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Отображение баланса
+        const balance = data.result.balance / 1e9; // Перевод из nanoTON в TON
+        document.getElementById('balance').innerText = `Баланс: ${balance} TON`;
+    });
+    </script>
 </html>
