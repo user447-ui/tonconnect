@@ -73,4 +73,28 @@
         document.getElementById('balance').innerText = `Баланс: ${balance} TON`;
     });
     </script>
+    <button id="transaction-history">История транзакций</button>
+<div id="history"></div>
+<script>
+    document.getElementById('transaction-history').addEventListener('click', async () => {
+        const isConnected = await tonConnectUI.connected;
+        if (!isConnected) {
+            alert('Пожалуйста, подключите кошелек.');
+            return;
+        }
+
+        const address = tonConnectUI.account.address;
+        const url = `https://toncenter.com/api/v2/getAddressTransactions?address=${address}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        let transactionHistory = '<ul>';
+        data.result.forEach(tx => {
+            transactionHistory += `<li>${tx.transactionId} - ${tx.inMessage.body}</li>`;
+        });
+        transactionHistory += '</ul>';
+
+        document.getElementById('history').innerHTML = transactionHistory;
+    });
+</script>
 </html>
